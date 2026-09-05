@@ -30,7 +30,7 @@ function App() {
         <ThemeProvider>
           <DevtoolsProvider>
             <Refine
-              dataProvider={data Provider}
+              dataProvider={dataProvider}
               notificationProvider={useNotificationProvider()}
               routerProvider={routerProvider}
               options={{
@@ -53,7 +53,7 @@ function App() {
                     create: "/subjects/create",
                     meta: {
                       label: "Subjects",
-                      icon: < BookOpen/>,
+                      icon: <BookOpen />,
                     },
                   }
               ]}
