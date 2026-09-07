@@ -1,24 +1,39 @@
-import { createSimpleRestDataProvider } from "@refinedev/rest/simple-rest";
-import { API_URL } from "./constants";
-import { BaseRecord, DataProvider, GetListParams, GetListResponse } from "@refinedev/core";
-import { subjects } from "./mock-data";
-// export const { dataProvider, kyInstance } = createSimpleRestDataProvider({
-//   apiURL: API_URL,
-// });
-export const dataProvider: DataProvider={
-  getList:async <TData extends BaseRecord = BaseRecord>({resource}:GetListParams):Promise<GetListResponse<TData>>=>{
-    if(resource!='subjects'){
-      return {data:[] as TData[], total:0};
-    }
+import { BACKEND_BASE_URL } from "@/constants";
+import { ListResponse } from "@/types";
+import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
-    return {data: subjects as unknown as TData[], total: subjects.length};
-  },
-  getOne:async ()=> {throw new Error('This function is nto present in mock')},
-  getMany:async ()=> {throw new Error('This function is nto present in mock')},
-  create:async ()=> {throw new Error('This function is nto present in mock')},
-  update:async ()=> {throw new Error('This function is nto present in mock')},
-  deleteOne:async ()=> {throw new Error('This function is nto present in mock')},
-  deleteMany:async ()=> {throw new Error('This function is nto present in mock')},
+const options: CreateDataProviderOptions = {
+  getList: {
+    getEndpoint: ({ resource }) => resource,
 
-  getApiUrl:()=>'',
-}
+    buildQueryParams: async ({ pagination, filters, resource }) => {
+      const page = pagination?.currentPage ?? 1;
+      const limit = pagination?.pageSize ?? 10;
+      const params: Record<string, string | number> = { page, limit: limit };
+      filters?.forEach((filter) => {
+        const field = 'field' in filter ? filter.field : '';
+        const value = String(filter.value);
+        if (resource === 'subjects') {
+          if (field === 'department') {
+            params.department = value;
+          }
+          if (field === 'name' || field === 'code') {
+            params.search = value;
+          }
+        }
+      })
+      return params;
+    },
+    mapResponse: async (response) => {
+      const payload: ListResponse = await response.json();
+      return payload.data ?? [];
+    },
+    getTotalCount: async (response) => {
+      const payload: ListResponse = await response.json();
+      return payload.pagination?.total ?? payload.data?.length ?? 0;
+    },
+  }
+};
+const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options);
+
+export { dataProvider };
