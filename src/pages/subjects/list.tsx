@@ -44,7 +44,14 @@ const SubjectsList = () => {
                 accessorKey:'department',
                 size:150,
                 header:()=><p className='column-title'>Department</p>,
-                cell:({getValue})=><Badge variant="secondary" >{getValue<string>()}</Badge>
+                cell:({getValue})=>{
+                    const department = getValue<unknown>();
+                    const departmentName = typeof department === 'object' && department !== null && 'name' in department
+                        ? String(department.name)
+                        : String(department ?? '');
+
+                    return <Badge variant="secondary">{departmentName}</Badge>;
+                }
             },
             {
                 id:'description',
