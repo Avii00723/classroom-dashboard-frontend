@@ -56,13 +56,12 @@ const UploadWidget = ({ value = null, onChange, disabled = false }: UploadWidget
     const openWidget = () => {
         if (!disabled) widgetRef.current?.open();
     }
-    const removeFromCloudinary = async () => {
-
-    }
     return (
         <div className='space-y-2'>
             {preview ? (
-                <div className='upload-preview'></div>
+                <div className='upload-preview'>
+                    <img src={preview.url} alt="uploaded image" />
+                </div>
             ) : <div className='upload-dropzone' role='button' tabIndex={0}
                 onClick={openWidget} onKeyDown={(event) => {
                     if (event.key === 'Enter') {
