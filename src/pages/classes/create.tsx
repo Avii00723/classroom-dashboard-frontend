@@ -203,7 +203,7 @@ const Create = () => {
                                         <FormItem>
                                             <FormLabel>Teacher <span className='text-orange-600'></span></FormLabel>
                                             <FormControl>
-                                                <Select onValueChange={(value) => field.onChange(Number(value))}
+                                                <Select onValueChange={field.onChange}
                                                  value={field?.value?.toString()}
                                                  disabled={teachersLoading}>
                                                     <FormControl>
