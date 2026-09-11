@@ -10,37 +10,16 @@
   <meta data-rh="true" property="og:image" content="https://refine.dev/img/refine_social.png" />
   <meta data-rh="true" name="twitter:image" content="https://refine.dev/img/refine_social.png" />
     <script type="text/javascript">
-      (function (w, d, s, r, k, h, m) {
-        if (
-          w.performance &&
-          w.performance.timing &&
-          w.performance.navigation &&
-          !w.s247r
-        ) {
-          w[r] =
-            w[r] ||
-            function () {
-              (w[r].q = w[r].q || []).push(arguments);
-            };
-          h = d.createElement('script');
-          h.async = true;
-          h.setAttribute('src', s + k);
-          d.getElementsByTagName('head')[0].appendChild(h);
-          (m = window.onerror),
-            (window.onerror = function (b, c, d, f, g) {
-              m && m(b, c, d, f, g),
-                g || (g = new Error(b)),
-                (w[r].q = w[r].q || []).push(['captureException', g]);
-            });
-        }
-      })(
-        window,
-        document,
-        '//static.site24x7rum.com/beacon/site24x7rum-min.js?appKey=',
-        's247r',
-        '40618c7d0380d25852432487d82fe864'
-      );
-    </script>
+(function(w,d,s,r,k,h,m){
+	if(w.performance && w.performance.timing && w.performance.navigation && !w.s247r) {
+		w[r] = w[r] || function(){(w[r].q = w[r].q || []).push(arguments)};
+		h=d.createElement('script');h.async=true;h.setAttribute('src',s+k);
+		d.getElementsByTagName('head')[0].appendChild(h);
+		(m = window.onerror),(window.onerror = function (b, c, d, f, g) {
+		m && m(b, c, d, f, g),g || (g = new Error(b)),(w[r].q = w[r].q || []).push(["captureException",g]);})
+	}
+})(window,document,'//static.site24x7rum.in/beacon/site24x7rum-min.js?appKey=','s247r','4bf2a8084f19665f21201eebd7140ccd');
+</script>
 
   <title>
     Refine - Build your React-based CRUD applications, without constraints.
