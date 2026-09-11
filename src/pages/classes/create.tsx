@@ -6,50 +6,82 @@ import { Separator } from '@/components/ui/separator'
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from '@/components/ui/form'
-import { useBack } from '@refinedev/core'
+import { useBack, useList } from '@refinedev/core'
+import type { HttpError } from '@refinedev/core'
+import { useForm } from '@refinedev/react-hook-form'
 import React from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type ControllerRenderProps, useForm } from "react-hook-form"
+import type { ControllerRenderProps } from "react-hook-form"
 import { classSchema } from '@/lib/schema'
 import * as z from 'zod'
 import { Input } from '@/components/ui/input'
-import type { UploadWidgetValue } from '@/types'
-import { Label } from '@/components/ui/label'
+import type { Subject, UploadWidgetValue, User } from '@/types'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { subjects, teachers } from '@/providers/mock-data'
+// import { subjects, teachers } from '@/providers/mock-data'
 import UploadWidget from '@/components/upload-widget'
 const Create = () => {
     const back = useBack();
-    const form = useForm<z.infer<typeof classSchema>>({
-        resolver: zodResolver(classSchema),
-        defaultValues: {
-            name: '',
-            description: '',
-            subjectId: 0,
-            teacherId: '',
-            capacity: 0,
-            status: 'active',
-            bannerUrl: '',
-            bannerCldPubId: '',
-            inviteCode: '',
-            schedules: [],
-        },
-    })
-    const { handleSubmit, control, formState: { isSubmitting, errors } } = form;
-    const onSubmit = (values: z.infer<typeof classSchema>): void => {
+        const form = useForm<z.infer<typeof classSchema>, HttpError, z.infer<typeof classSchema>>({
+                resolver: zodResolver(classSchema),
+                refineCoreProps: {
+                        resource: "classes",
+                        action: "create",
+                },
+                defaultValues: {
+                        name: '',
+                        description: '',
+                        subjectId: 0,
+                        teacherId: '',
+                        capacity: 0,
+                        status: 'active',
+                        bannerUrl: '',
+                        bannerCldPubId: '',
+                        inviteCode: '',
+                        schedules: [],
+                },
+        });
+
+    const {
+        refineCore:{onFinish},
+         handleSubmit,
+         control,
+         formState: { errors } 
+        } = form;
+    const onSubmit = async (values: z.infer<typeof classSchema>): Promise<void> => {
         try {
-            console.log(values)
+            await onFinish(values);
         } catch (error) {
             console.log('Error creating new classes', error);
         }
     }
+    const { query: subjectsQuery } = useList<Subject>({
+        resource:'subjects',
+        pagination:{
+            pageSize:100
+        }
+    })
+    const {query:teachersQuery} = useList<User>({
+        resource:'users',
+        filters:[
+            {field:'role',operator:'eq',value:'teacher'},
+        ],
+        pagination:{
+            pageSize:100
+        }
+    })
+    const subjects=subjectsQuery?.data?.data || [];
+    const subjectsLoading=subjectsQuery.isLoading;
+
+    const teachers=teachersQuery?.data?.data || [];
+    const teachersLoading=teachersQuery.isLoading;
+
     const bannerPublicId = form.watch('bannerCldPubId');
+    
     const setBannerImage = (
         field: ControllerRenderProps<z.infer<typeof classSchema>, 'bannerUrl'>,
         file: UploadWidgetValue | null,
@@ -138,7 +170,9 @@ const Create = () => {
                                             <FormItem>
                                                 <FormLabel>Subject <span className='text-orange-600'></span></FormLabel>
                                                 <FormControl>
-                                                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field?.value?.toString()}>
+                                                    <Select onValueChange={(value) => field.onChange(Number(value))}
+                                                     value={field?.value?.toString()}
+                                                     disabled={subjectsLoading}>
                                                         <FormControl>
                                                             <SelectTrigger className='w-full'>
                                                                 <SelectValue placeholder="Select a subject" />
@@ -169,7 +203,9 @@ const Create = () => {
                                         <FormItem>
                                             <FormLabel>Teacher <span className='text-orange-600'></span></FormLabel>
                                             <FormControl>
-                                                <Select onValueChange={(value) => field.onChange(Number(value))} value={field?.value?.toString()}>
+                                                <Select onValueChange={(value) => field.onChange(Number(value))}
+                                                 value={field?.value?.toString()}
+                                                 disabled={teachersLoading}>
                                                     <FormControl>
                                                         <SelectTrigger className='w-full'>
                                                             <SelectValue placeholder="Select a teacher" />
