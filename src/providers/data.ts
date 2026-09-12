@@ -1,6 +1,6 @@
 import { BACKEND_BASE_URL } from "@/constants";
 import { CreateResponse, ListResponse } from "@/types";
-import { HttpError } from "@refinedev/core";
+import { GetOneResponse, HttpError } from "@refinedev/core";
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
 const buildHttpError = async (response: Response): Promise<HttpError> => {
@@ -60,6 +60,13 @@ const options: CreateDataProviderOptions = {
     buildBodyParams:async ({variables})=> variables,
     mapResponse: async (response)=>{
       const json: CreateResponse=await response.json();
+      return json.data ?? [];
+    }
+  },
+  getOne:{
+    getEndpoint:({resource,id})=>`${resource}/${id}`,
+    mapResponse: async (response)=>{
+      const json:GetOneResponse=await response.json();
       return json.data ?? [];
     }
   }
