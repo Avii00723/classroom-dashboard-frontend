@@ -1,9 +1,4 @@
-import {
-  Refine,
-  GitHubBanner,
-  WelcomePage,
-  Authenticated,
-} from "@refinedev/core";
+import { Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
@@ -17,39 +12,36 @@ import { useNotificationProvider } from "./components/refine-ui/notification/use
 import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
-import Dashboard from "./pages/Dashboard";
-import { BookOpen, GraduationCap, Home } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, Home, Users } from "lucide-react";
 import { Layout } from "./components/refine-ui/layout/layout";
-import SubjectsList from "./pages/subjects/list";
-import SubjectCreate from "./pages/subjects/create";
-import ClassesList from "./pages/classes/list";
-import ClassCreate from "./pages/classes/create";
-import ClassesShow from "./pages/classes/show";
+import { SchoolDataProvider } from "./providers/school-data";
+import { AdminResourcePage, Dashboard, ResourceDetailPage } from "./pages/AdminPages";
 
 function App() {
   return (
     <BrowserRouter>
       <RefineKbarProvider>
         <ThemeProvider>
-          <DevtoolsProvider>
-            <Refine
-              dataProvider={dataProvider}
-              notificationProvider={useNotificationProvider()}
-              routerProvider={routerProvider}
-              options={{
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-                projectId: "CLCCID-igpoi9-Rpp806",
-              }}
-              resources={[
-                {
-                  name: "dashboard",
-                  list: "/",
-                  meta: {
-                    label: "Home",
-                    icon: <Home />,
-                  }
-                },
+          <SchoolDataProvider>
+            <DevtoolsProvider>
+              <Refine
+                dataProvider={dataProvider}
+                notificationProvider={useNotificationProvider()}
+                routerProvider={routerProvider}
+                options={{
+                  syncWithLocation: true,
+                  warnWhenUnsavedChanges: true,
+                  projectId: "CLCCID-igpoi9-Rpp806",
+                }}
+                resources={[
+                  {
+                    name: "dashboard",
+                    list: "/",
+                    meta: {
+                      label: "Home",
+                      icon: <Home />,
+                    }
+                  },
                   {
                     name: "subjects",
                     list: "/subjects",
@@ -59,44 +51,52 @@ function App() {
                       icon: <BookOpen />,
                     },
                   },
-                {
-                  name:'classes',
-                  list:'/classes',
-                  create:'/classes/create',
-                  show:'/classes/show/:id',
-                  meta:{
-                    label:'Classes',
-                    icon:<GraduationCap/>
-                }
-              },
-              ]}
-            >
-              <Routes>
-                <Route element={
-                  <Layout>
-                    <Outlet />
-                  </Layout>
-                }>
+                  {
+                    name: "users",
+                    list: "/users",
+                    show: "/users/:id",
+                    meta: { label: "Users", icon: <Users /> },
+                  },
+                  {
+                    name: "departments",
+                    list: "/departments",
+                    show: "/departments/:id",
+                    meta: { label: "Departments", icon: <Building2 /> },
+                  },
+                  {
+                    name: "classes",
+                    list: "/classes",
+                    show: "/classes/:id",
+                    meta: { label: "Classes", icon: <GraduationCap /> },
+                  },
+                ]}
+              >
+                <Routes>
+                  <Route element={
+                    <Layout>
+                      <Outlet />
+                    </Layout>
+                  }>
 
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="subjects" >
-                  <Route index element={<SubjectsList/>}/>
-                  <Route path="create" element={<SubjectCreate/>} />
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="users" element={<AdminResourcePage resource="users" />} />
+                    <Route path="users/:id" element={<ResourceDetailPage resource="users" />} />
+                    <Route path="departments" element={<AdminResourcePage resource="departments" />} />
+                    <Route path="departments/:id" element={<ResourceDetailPage resource="departments" />} />
+                    <Route path="subjects" element={<AdminResourcePage resource="subjects" />} />
+                    <Route path="subjects/:id" element={<ResourceDetailPage resource="subjects" />} />
+                    <Route path="classes" element={<AdminResourcePage resource="classes" />} />
+                    <Route path="classes/:id" element={<ResourceDetailPage resource="classes" />} />
                   </Route>
-                  <Route path="classes" >
-                  <Route index element={<ClassesList/>}/>
-                  <Route path="create" element={<ClassCreate/>} />
-                  <Route path="show/:id" element={<ClassesShow/>}/>
-                  </Route>
-                </Route>
-              </Routes>
-              <Toaster />
-              <RefineKbar />
-              <UnsavedChangesNotifier />
-              <DocumentTitleHandler />
-            </Refine>
-            <DevtoolsPanel />
-          </DevtoolsProvider>
+                </Routes>
+                <Toaster />
+                <RefineKbar />
+                <UnsavedChangesNotifier />
+                <DocumentTitleHandler />
+              </Refine>
+              <DevtoolsPanel />
+            </DevtoolsProvider>
+          </SchoolDataProvider>
         </ThemeProvider>
       </RefineKbarProvider>
     </BrowserRouter>
